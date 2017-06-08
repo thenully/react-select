@@ -1,7 +1,7 @@
-import classNames from 'classnames';
 import React from 'react';
+import classNames from 'classnames';
 
-function menuRenderer ({
+export default ({
 	focusedOption,
 	instancePrefix,
 	labelKey,
@@ -14,9 +14,8 @@ function menuRenderer ({
 	valueArray,
 	valueKey,
 	onOptionRef
-}) {
-	let Option = optionComponent;
-
+}) => {
+	const Option = optionComponent;
 	return options.map((option, i) => {
 		let isSelected = valueArray && valueArray.indexOf(option) > -1;
 		let isFocused = option === focusedOption;
@@ -45,6 +44,4 @@ function menuRenderer ({
 			</Option>
 		);
 	});
-}
-
-module.exports = menuRenderer;
+};

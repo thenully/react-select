@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Select from './Select';
-import stripDiacritics from './utils/stripDiacritics';
 
 const propTypes = {
 	autoload: PropTypes.bool.isRequired,       // automatically call the `loadOptions` prop on-mount; defaults to true
@@ -32,13 +31,13 @@ const propTypes = {
 	onInputChange: PropTypes.func,             // optional for keeping track of what is being typed
 	value: PropTypes.any,                      // initial field value
 };
-
 const defaultCache = {};
-
 const defaultProps = {
 	autoload: true,
 	cache: defaultCache,
-	children: defaultChildren,
+	children: (props) => {
+		return <Select {...props} />;
+	},
 	ignoreAccents: true,
 	ignoreCase: true,
 	loadingPlaceholder: 'Loading...',
@@ -46,7 +45,7 @@ const defaultProps = {
 	searchPromptText: 'Type to search',
 };
 
-export default class Async extends Component {
+class Async extends Component {
 	constructor (props, context) {
 		super(props, context);
 
@@ -138,10 +137,6 @@ export default class Async extends Component {
 	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 
-		if (ignoreAccents) {
-			inputValue = stripDiacritics(inputValue);
-		}
-
 		if (ignoreCase) {
 			inputValue = inputValue.toLowerCase();
 		}
@@ -208,8 +203,5 @@ export default class Async extends Component {
 Async.propTypes = propTypes;
 Async.defaultProps = defaultProps;
 
-function defaultChildren (props) {
-	return (
-		<Select {...props} />
-	);
-}
+export default Async;
+

@@ -1,10 +1,4 @@
-import stripDiacritics from './stripDiacritics';
-
-function filterOptions (options, filterValue, excludeOptions, props) {
-	if (props.ignoreAccents) {
-		filterValue = stripDiacritics(filterValue);
-	}
-
+export default (options, filterValue, excludeOptions, props) => {
 	if (props.ignoreCase) {
 		filterValue = filterValue.toLowerCase();
 	}
@@ -15,13 +9,10 @@ function filterOptions (options, filterValue, excludeOptions, props) {
 		if (excludeOptions && excludeOptions.indexOf(option[props.valueKey]) > -1) return false;
 		if (props.filterOption) return props.filterOption.call(this, option, filterValue);
 		if (!filterValue) return true;
-		var valueTest = String(option[props.valueKey]);
-		var labelTest = String(option[props.labelKey]);
-		if (props.ignoreAccents) {
-			if (props.matchProp !== 'label') valueTest = stripDiacritics(valueTest);
-			if (props.matchProp !== 'value') labelTest = stripDiacritics(labelTest);
-		}
+		let valueTest = String(option[props.valueKey]);
+		let labelTest = String(option[props.labelKey]);
 		if (props.ignoreCase) {
+
 			if (props.matchProp !== 'label') valueTest = valueTest.toLowerCase();
 			if (props.matchProp !== 'value') labelTest = labelTest.toLowerCase();
 		}
@@ -33,6 +24,4 @@ function filterOptions (options, filterValue, excludeOptions, props) {
 			(props.matchProp !== 'value' && labelTest.indexOf(filterValue) >= 0)
 		);
 	});
-}
-
-module.exports = filterOptions;
+};

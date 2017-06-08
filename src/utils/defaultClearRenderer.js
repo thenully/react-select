@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function clearRenderer () {
+export default () => {
 	return (
 		<span
 			className="Select-clear"
