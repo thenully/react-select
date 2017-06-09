@@ -1,67 +1,17 @@
-[![NPM](https://img.shields.io/npm/v/react-select.svg)](https://www.npmjs.com/package/react-select)
-[![Build Status](https://travis-ci.org/JedWatson/react-select.svg?branch=master)](https://travis-ci.org/JedWatson/react-select)
-[![Coverage Status](https://coveralls.io/repos/JedWatson/react-select/badge.svg?branch=master&service=github)](https://coveralls.io/github/JedWatson/react-select?branch=master)
-[![Supported by Thinkmill](https://thinkmill.github.io/badge/heart.svg)](http://thinkmill.com.au/?utm_source=github&utm_medium=badge&utm_campaign=react-select)
-[![CDNJS](https://img.shields.io/cdnjs/v/react-select.svg)](https://cdnjs.com/libraries/react-select)
-
-React-Select
+React-Select-ES6
 ============
 
 A Select control built with and for [React](http://facebook.github.io/react/index.html). Initially built for use in [KeystoneJS](http://www.keystonejs.com).
 
 
-## New version 1.0.0-rc
-
-I've nearly completed a major rewrite of this component (see issue [#568](https://github.com/JedWatson/react-select/issues/568) for details and progress). The new code has been merged into `master`, and `react-select@1.0.0-rc` has been published to npm and bower.
-
-1.0.0 has some breaking changes. The documentation is still being updated for the new API; notes on the changes can be found in [CHANGES.md](https://github.com/JedWatson/react-select/blob/master/CHANGES.md) and will be finalised into [HISTORY.md](https://github.com/JedWatson/react-select/blob/master/HISTORY.md) soon.
-
-Testing, feedback and PRs for the new version are appreciated.
-
-
 ## Demo & Examples
 
-Live demo: [jedwatson.github.io/react-select](http://jedwatson.github.io/react-select/)
-
-The live demo is still running `v0.9.1`.
-
-To build the **new 1.0.0** examples locally, clone this repo then run:
-
 ```javascript
-npm install
-npm start
+yarn
+yarn start
 ```
 
 Then open [`localhost:8000`](http://localhost:8000) in a browser.
-
-
-## Installation
-
-The easiest way to use React-Select is to install it from NPM and include it in your own React build process (using [Browserify](http://browserify.org), etc).
-
-```javascript
-npm install react-select --save
-```
-
-At this point you can import react-select and its styles in your application as follows:
-
-```js
-import Select from 'react-select';
-
-// Be sure to include styles at some point, probably during your bootstrapping
-import 'react-select/dist/react-select.css';
-```
-
-You can also use the standalone build by including `react-select.js` and `react-select.css` in your page. (If you do this though you'll also need to include the dependencies.) For example:
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
-<script src="https://unpkg.com/classnames/index.js"></script>
-<script src="https://unpkg.com/react-input-autosize/dist/react-input-autosize.js"></script>
-<script src="https://unpkg.com/react-select/dist/react-select.js"></script>
-
-<link rel="stylesheet" href="https://unpkg.com/react-select/dist/react-select.css">
-```
 
 
 ## Usage
@@ -75,8 +25,6 @@ The `value` property of each option should be set to either a string or a number
 When the value is changed, `onChange(selectedValueOrValues)` will fire.
 
 ```javascript
-var Select = require('react-select');
-
 var options = [
   { value: 'one', label: 'One' },
   { value: 'two', label: 'Two' }
@@ -132,8 +80,6 @@ The select control will intelligently cache options for input strings that have 
 Unless you specify the property `autoload={false}` the control will automatically load the default set of options (i.e. for `input: ''`) when it is mounted.
 
 ```javascript
-var Select = require('react-select');
-
 var getOptions = function(input, callback) {
   setTimeout(function() {
     callback(null, {
@@ -163,8 +109,6 @@ Everything that applies to `loadOptions` with callbacks still applies to the Pro
 An example using the `fetch` API and ES6 syntax, with an API that returns an object like:
 
 ```javascript
-import Select from 'react-select';
-
 /*
  * assuming the API returns something like this:
  *   const json = [
@@ -194,8 +138,6 @@ const getOptions = (input) => {
 If you want to load options asynchronously externally from the `Select` component, you can have the `Select` component show a loading spinner by passing in the `isLoading` prop set to `true`.
 
 ```javascript
-var Select = require('react-select');
-
 var isLoadingExternally = true;
 
 <Select
@@ -212,8 +154,6 @@ It decorates a `Select` and so it supports all of the default properties (eg sin
 The easiest way to use it is like so:
 
 ```js
-import { Creatable } from 'react-select';
-
 function render (selectProps) {
   return <Creatable {...selectProps} />;
 };
@@ -238,9 +178,6 @@ It ties `Async` and `Creatable` components together and supports a union of thei
 Use it as follows:
 
 ```jsx
-import React from 'react';
-import { AsyncCreatable } from 'react-select';
-
 function render (props) {
   // props can be a mix of Async, Creatable, and Select properties
   return (
@@ -342,6 +279,36 @@ function onInputKeyDown(event) {
 />
 ```
 
+### Adding floating label
+
+If you want to show floating label above the `Select` component, you can pass in the `floatingLabelText` prop set to string.
+
+```js
+
+const style = {
+	backgroundColor: '#fff',
+	border: 0,
+	borderBottom: '1px solid #e4e4e4',
+	borderRadius: 0,
+	boxShadow: 'none',
+	color: '#333',
+	display: 'table',
+	height: '36px',
+	outline: 'none',
+	overflow: 'auto',
+	position: 'relative',
+};
+		
+<Select
+	{...otherProps}
+	style={style}
+	floatingLabelText="Github ID"
+	hideArrow
+/>
+```
+
+
+
 ### Further options
 
 | Property | Type | Default | Description |
@@ -402,6 +369,16 @@ function onInputKeyDown(event) {
 | value | any | undefined | initial field value |
 | valueKey | string | 'value' | the option property to use for the value |
 | valueRenderer | func | undefined | function which returns a custom way to render the value selected `function (option) {}` |
+| wrapperStyle | object | undefined | optional style to apply to the component wrapper |
+| inputWrapperStyle | object | undefined | optional style to apply to the input wrapper |
+| inputStyle | object | undefined | optional style to apply to the input |
+| hideArrow | bool | false | whether arrow icon is hidden or not |
+| floatingLabelFixed | bool | undefined |  |
+| floatingLabelFocusStyle | object | undefined |  |
+| floatingLabelShrinkStyle | object | undefined |  |
+| floatingLabelStyle | object | undefined |  |
+| floatingLabelText | node | undefined |  |
+
 
 ### Methods
 
@@ -412,13 +389,35 @@ Right now there's simply a `focus()` method that gives the control focus. All ot
 <instance>.focus();
 ```
 
-# Contributing
-
-See our [CONTRIBUTING.md](https://github.com/JedWatson/react-select/blob/master/CONTRIBUTING.md) for information on how to contribute.
-
-Thanks to the projects this was inspired by: [Selectize](http://brianreavis.github.io/selectize.js/) (in terms of behaviour and user experience), [React-Autocomplete](https://github.com/rackt/react-autocomplete) (as a quality React Combobox implementation), as well as other select controls including [Chosen](http://harvesthq.github.io/chosen/) and [Select2](http://ivaynberg.github.io/select2/).
 
 
-# License
+## Bug Report
 
-MIT Licensed. Copyright (c) Jed Watson 2016.
+If you find a bug, please report to us posting [issues](https://github.com/thenully/react-select-es6/issues) on GitHub.
+
+
+
+## License
+react-select-es6 is released under the MIT license.
+
+```
+Copyright (c) 2017 Thenully Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+```
