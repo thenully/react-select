@@ -9,6 +9,7 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 
 import TextFieldLabel from './TextFieldLabel';
+import transitions from './styles/transitions';
 
 import defaultArrowRenderer from './utils/defaultArrowRenderer';
 import defaultFilterOptions from './utils/defaultFilterOptions';
@@ -41,6 +42,16 @@ const getStyles = (props, state) => {
 		floatingLabel: {
 			color: '#cdcdcd',
 			pointerEvents: 'none',
+		},
+		error: {
+			position: 'absolute',
+			fontSize: 11,
+			fontWeight: 'normal',
+			lineHeight: '1',
+			bottom: '-20px',
+			textAlign: 'left',
+			color: '#f92020',
+			transition: transitions.easeOut(),
 		},
 	};
 
@@ -143,7 +154,11 @@ const propTypes = {
 	floatingLabelFocusStyle: PropTypes.object,
 	floatingLabelShrinkStyle: PropTypes.object,
 	floatingLabelStyle: PropTypes.object,
-	floatingLabelText: PropTypes.node,
+	floatingLabelText: PropTypes.node,		// title for the error element
+	errorClassName: PropTypes.string,			// className for the error element
+	errorStyle: PropTypes.object,					// optional style to apply to the error element
+	errorText: PropTypes.node,						// title for the error element
+
 };
 const defaultProps = {
 	addLabelText: 'Add "{label}"?',
@@ -196,6 +211,7 @@ class Select extends Component {
 			isPseudoFocused: false,
 			required: false,
 			hasValue: false,
+			errorText: undefined,
 		};
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseDownOnArrow = this.handleMouseDownOnArrow.bind(this);
@@ -234,6 +250,7 @@ class Select extends Component {
 			this.setState({
 				required: this.handleRequired(valueArray[0], this.props.multi),
 				hasValue: isValid(this.props.value),
+				errorText: this.props.errorText,
 			});
 		}
 	}
@@ -251,6 +268,7 @@ class Select extends Component {
 			this.setState({
 				required: this.handleRequired(valueArray[0], nextProps.multi),
 				hasValue: isValid(nextProps.value),
+				errorText: nextProps.errorText,
 			});
 		}
 	}
@@ -477,10 +495,10 @@ class Select extends Component {
 
 	handleInputBlur (event) {
 		// The check for menu.contains(activeElement) is necessary to prevent IE11's scrollbar from closing the menu in certain contexts.
-		if (this.menu && (this.menu === document.activeElement || this.menu.contains(document.activeElement))) {
-			this.focus();
-			return;
-		}
+		// if (this.menu && (this.menu === document.activeElement || this.menu.contains(document.activeElement))) {
+		// 	this.focus();
+		// 	return;
+		// }
 
 		if (this.props.onBlur) {
 			this.props.onBlur(event);
@@ -868,6 +886,16 @@ class Select extends Component {
 		);
 	}
 
+	renderErrorText() {
+		if (!this.props.errorText) return;
+		const styles = getStyles(this.props, this.state);
+		return (
+			<label className={this.props.errorClassName} style={Object.assign(styles.error, this.props.errorStyle)}>
+				{this.props.errorText}
+			</label>
+		);
+	}
+
 	renderValue (valueArray, isOpen) {
 		let renderLabel = this.props.valueRenderer || this.getOptionLabel;
 		const ValueComponent = this.props.valueComponent;
@@ -879,12 +907,13 @@ class Select extends Component {
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
 		if (this.props.multi) {
 			return valueArray.map((value, i) => {
+				// key={`value-${i}-${value[this.props.valueKey]}`}
 				return (
 					<ValueComponent
 						id={this._instancePrefix + '-value-' + i}
 						instancePrefix={this._instancePrefix}
 						disabled={this.props.disabled || value.clearableValue === false}
-						key={`value-${i}-${value[this.props.valueKey]}`}
+						key={i}
 						onClick={onClick}
 						onRemove={this.removeValue}
 						value={value}>
@@ -955,7 +984,6 @@ class Select extends Component {
 					role="combobox"
 					className={className}
 					tabIndex={this.props.tabIndex || 0}
-					onBlur={this.handleInputBlur}
 					onFocus={this.handleInputFocus}
 					ref={node => this.input = node}
 					style={{ border: 0, width: 1, display:'inline-block' }}/>
@@ -1193,6 +1221,7 @@ class Select extends Component {
 					{this.renderArrow()}
 				</div>
 				{isOpen ? this.renderOuter(options, !this.props.multi ? valueArray : null, focusedOption) : null}
+				{this.renderErrorText()}
 			</div>
 		);
 	}
