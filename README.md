@@ -308,6 +308,18 @@ const style = {
 ```
 
 
+### Adding error text
+
+If you want to show error text under the `Select` component, you can pass in the `errorText` prop set to string.
+
+```js
+<Select
+	{...otherProps}
+	errorText="This is error text."
+/>
+```
+
+
 
 ### Further options
 
@@ -378,6 +390,10 @@ const style = {
 | floatingLabelShrinkStyle | object | undefined |  |
 | floatingLabelStyle | object | undefined |  |
 | floatingLabelText | node | undefined |  |
+| errorClassName | string | undefined | className for the error element |
+| errorStyle | object | undefined | optional style to apply to the error element |
+| errorText | node | undefined | title for the error element |
+
 
 
 ### Methods
