@@ -2,10 +2,13 @@
  * Copyright (c) 2017 Thenully Inc.
  * react-select project is licensed under the MIT license
  */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+
+import TextFieldLabel from './TextFieldLabel';
 
 import defaultArrowRenderer from './utils/defaultArrowRenderer';
 import defaultFilterOptions from './utils/defaultFilterOptions';
@@ -28,6 +31,33 @@ function stringifyValue (value) {
 		return '';
 	}
 }
+
+function isValid(value) {
+	return value !== '' && value !== undefined && value !== null && !(Array.isArray(value) && value.length === 0);
+}
+
+const getStyles = (props, state) => {
+	const styles = {
+		floatingLabel: {
+			color: '#cdcdcd',
+			pointerEvents: 'none',
+		},
+	};
+
+	styles.textarea = Object.assign({}, styles.input, {
+		marginTop: props.floatingLabelText ? 36 : 12,
+		marginBottom: props.floatingLabelText ? -36 : -12,
+		boxSizing: 'border-box',
+		font: 'inherit',
+	});
+
+	// Do not assign a height to the textarea as he handles it on his own.
+	if (state.isFocused || state.hasValue) {
+		styles.floatingLabel.color = '#1d1d1d';
+	}
+
+	return styles;
+};
 
 const stringOrNode = PropTypes.oneOfType([
 	PropTypes.string,
@@ -106,6 +136,14 @@ const propTypes = {
 	valueKey: PropTypes.string,           // path of the label value in option objects
 	valueRenderer: PropTypes.func,        // valueRenderer: function (option) {}
 	wrapperStyle: PropTypes.object,       // optional style to apply to the component wrapper
+	inputWrapperStyle: PropTypes.object,	// optional style to apply to the input wrapper
+	inputStyle: PropTypes.object,					// optional style to apply to the input
+	hideArrow: PropTypes.bool,						// whether arrow icon is hidden or not
+	floatingLabelFixed: PropTypes.bool,
+	floatingLabelFocusStyle: PropTypes.object,
+	floatingLabelShrinkStyle: PropTypes.object,
+	floatingLabelStyle: PropTypes.object,
+	floatingLabelText: PropTypes.node,
 };
 const defaultProps = {
 	addLabelText: 'Add "{label}"?',
@@ -145,6 +183,7 @@ const defaultProps = {
 	tabSelectsValue: true,
 	valueComponent: Value,
 	valueKey: 'value',
+	hideArrow: false,
 };
 
 class Select extends Component {
@@ -156,6 +195,7 @@ class Select extends Component {
 			isOpen: false,
 			isPseudoFocused: false,
 			required: false,
+			hasValue: false,
 		};
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseDownOnArrow = this.handleMouseDownOnArrow.bind(this);
@@ -193,6 +233,7 @@ class Select extends Component {
 		if (this.props.required) {
 			this.setState({
 				required: this.handleRequired(valueArray[0], this.props.multi),
+				hasValue: isValid(this.props.value),
 			});
 		}
 	}
@@ -209,6 +250,7 @@ class Select extends Component {
 		if (nextProps.required) {
 			this.setState({
 				required: this.handleRequired(valueArray[0], nextProps.multi),
+				hasValue: isValid(nextProps.value),
 			});
 		}
 	}
@@ -469,6 +511,7 @@ class Select extends Component {
 			isOpen: true,
 			isPseudoFocused: false,
 			inputValue: newInputValue,
+			hasValue: isValid(newInputValue),
 		});
 	}
 
@@ -803,10 +846,34 @@ class Select extends Component {
 		);
 	}
 
+	renderFloatingLabel() {
+		if (!this.props.floatingLabelText) return;
+
+		const styles = getStyles(this.props, this.state);
+
+		return (
+			<TextFieldLabel
+				style={Object.assign(
+					styles.floatingLabel,
+					this.props.floatingLabelStyle,
+					this.state.hasValue || this.state.isFocused ? this.props.floatingLabelFocusStyle : null
+				)}
+				shrinkStyle={this.props.floatingLabelShrinkStyle}
+				htmlFor="TextFieldLabel"
+				shrink={this.state.hasValue || this.state.isFocused || this.props.floatingLabelFixed}
+				disabled={this.props.disabled}
+			>
+				{this.props.floatingLabelText}
+			</TextFieldLabel>
+		);
+	}
+
 	renderValue (valueArray, isOpen) {
 		let renderLabel = this.props.valueRenderer || this.getOptionLabel;
 		const ValueComponent = this.props.valueComponent;
 		if (!valueArray.length) {
+			if (this.props.floatingLabelText ) return null;
+
 			return !this.state.inputValue ? <div className="Select-placeholder">{this.props.placeholder}</div> : null;
 		}
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
@@ -871,7 +938,8 @@ class Select extends Component {
 			onFocus: this.handleInputFocus,
 			ref: ref => this.input = ref,
 			required: this.state.required,
-			value: this.state.inputValue
+			value: this.state.inputValue,
+			style: this.props.inputStyle,
 		});
 
 		if (this.props.inputRenderer) {
@@ -895,7 +963,7 @@ class Select extends Component {
 		}
 
 		return (
-			<div className={ className }>
+			<div className={ className } style={this.props.inputWrapperStyle}>
 				<input {...inputProps} />
 			</div>
 		);
@@ -917,6 +985,8 @@ class Select extends Component {
 	}
 
 	renderArrow () {
+		if (this.props.hideArrow) return null;
+
 		const onMouseDown = this.handleMouseDownOnArrow;
 		const isOpen = this.state.isOpen;
 		const arrow = this.props.arrowRenderer({ onMouseDown, isOpen });
@@ -1112,6 +1182,7 @@ class Select extends Component {
 						 onTouchEnd={this.handleTouchEnd}
 						 onTouchStart={this.handleTouchStart}
 						 onTouchMove={this.handleTouchMove}>
+					{this.renderFloatingLabel()}
 					<span className="Select-multi-value-wrapper" id={this._instancePrefix + '-value'}>
 						{this.renderValue(valueArray, isOpen)}
 						{this.renderInput(valueArray, focusedOptionIndex)}
