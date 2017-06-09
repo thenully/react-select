@@ -468,6 +468,10 @@ var _TextFieldLabel = require('./TextFieldLabel');
 
 var _TextFieldLabel2 = _interopRequireDefault(_TextFieldLabel);
 
+var _stylesTransitions = require('./styles/transitions');
+
+var _stylesTransitions2 = _interopRequireDefault(_stylesTransitions);
+
 var _utilsDefaultArrowRenderer = require('./utils/defaultArrowRenderer');
 
 var _utilsDefaultArrowRenderer2 = _interopRequireDefault(_utilsDefaultArrowRenderer);
@@ -518,6 +522,16 @@ var getStyles = function getStyles(props, state) {
 		floatingLabel: {
 			color: '#cdcdcd',
 			pointerEvents: 'none'
+		},
+		error: {
+			position: 'absolute',
+			fontSize: 11,
+			fontWeight: 'normal',
+			lineHeight: '1',
+			bottom: '-20px',
+			textAlign: 'left',
+			color: '#f92020',
+			transition: _stylesTransitions2['default'].easeOut()
 		}
 	};
 
@@ -617,8 +631,12 @@ var propTypes = {
 	floatingLabelFocusStyle: _propTypes2['default'].object,
 	floatingLabelShrinkStyle: _propTypes2['default'].object,
 	floatingLabelStyle: _propTypes2['default'].object,
-	floatingLabelText: _propTypes2['default'].node
-};
+	floatingLabelText: _propTypes2['default'].node, // title for the error element
+	errorClassName: _propTypes2['default'].string, // className for the error element
+	errorStyle: _propTypes2['default'].object, // optional style to apply to the error element
+	errorText: _propTypes2['default'].node };
+// title for the error element
+
 var defaultProps = {
 	addLabelText: 'Add "{label}"?',
 	arrowRenderer: _utilsDefaultArrowRenderer2['default'],
@@ -673,7 +691,8 @@ var Select = (function (_Component) {
 			isOpen: false,
 			isPseudoFocused: false,
 			required: false,
-			hasValue: false
+			hasValue: false,
+			errorText: undefined
 		};
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseDownOnArrow = this.handleMouseDownOnArrow.bind(this);
@@ -713,7 +732,8 @@ var Select = (function (_Component) {
 			if (this.props.required) {
 				this.setState({
 					required: this.handleRequired(valueArray[0], this.props.multi),
-					hasValue: isValid(this.props.value)
+					hasValue: isValid(this.props.value),
+					errorText: this.props.errorText
 				});
 			}
 		}
@@ -732,7 +752,8 @@ var Select = (function (_Component) {
 			if (nextProps.required) {
 				this.setState({
 					required: this.handleRequired(valueArray[0], nextProps.multi),
-					hasValue: isValid(nextProps.value)
+					hasValue: isValid(nextProps.value),
+					errorText: nextProps.errorText
 				});
 			}
 		}
@@ -976,10 +997,10 @@ var Select = (function (_Component) {
 		key: 'handleInputBlur',
 		value: function handleInputBlur(event) {
 			// The check for menu.contains(activeElement) is necessary to prevent IE11's scrollbar from closing the menu in certain contexts.
-			if (this.menu && (this.menu === document.activeElement || this.menu.contains(document.activeElement))) {
-				this.focus();
-				return;
-			}
+			// if (this.menu && (this.menu === document.activeElement || this.menu.contains(document.activeElement))) {
+			// 	this.focus();
+			// 	return;
+			// }
 
 			if (this.props.onBlur) {
 				this.props.onBlur(event);
@@ -1426,6 +1447,17 @@ var Select = (function (_Component) {
 			);
 		}
 	}, {
+		key: 'renderErrorText',
+		value: function renderErrorText() {
+			if (!this.props.errorText) return;
+			var styles = getStyles(this.props, this.state);
+			return _react2['default'].createElement(
+				'label',
+				{ className: this.props.errorClassName, style: _extends(styles.error, this.props.errorStyle) },
+				this.props.errorText
+			);
+		}
+	}, {
 		key: 'renderValue',
 		value: function renderValue(valueArray, isOpen) {
 			var _this4 = this;
@@ -1444,13 +1476,14 @@ var Select = (function (_Component) {
 			var onClick = this.props.onValueClick ? this.handleValueClick : null;
 			if (this.props.multi) {
 				return valueArray.map(function (value, i) {
+					// key={`value-${i}-${value[this.props.valueKey]}`}
 					return _react2['default'].createElement(
 						ValueComponent,
 						{
 							id: _this4._instancePrefix + '-value-' + i,
 							instancePrefix: _this4._instancePrefix,
 							disabled: _this4.props.disabled || value.clearableValue === false,
-							key: 'value-' + i + '-' + value[_this4.props.valueKey],
+							key: i,
 							onClick: onClick,
 							onRemove: _this4.removeValue,
 							value: value },
@@ -1525,7 +1558,6 @@ var Select = (function (_Component) {
 					role: 'combobox',
 					className: className,
 					tabIndex: this.props.tabIndex || 0,
-					onBlur: this.handleInputBlur,
 					onFocus: this.handleInputFocus,
 					ref: function (node) {
 						return _this5.input = node;
@@ -1783,7 +1815,8 @@ var Select = (function (_Component) {
 					this.renderClear(),
 					this.renderArrow()
 				),
-				isOpen ? this.renderOuter(options, !this.props.multi ? valueArray : null, focusedOption) : null
+				isOpen ? this.renderOuter(options, !this.props.multi ? valueArray : null, focusedOption) : null,
+				this.renderErrorText()
 			);
 		}
 	}]);
@@ -1799,7 +1832,7 @@ exports['default'] = Select;
 module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./Async":1,"./Option":2,"./TextFieldLabel":4,"./Value":5,"./utils/defaultArrowRenderer":7,"./utils/defaultClearRenderer":8,"./utils/defaultFilterOptions":9,"./utils/defaultMenuRenderer":10,"prop-types":undefined}],4:[function(require,module,exports){
+},{"./Async":1,"./Option":2,"./TextFieldLabel":4,"./Value":5,"./styles/transitions":6,"./utils/defaultArrowRenderer":7,"./utils/defaultClearRenderer":8,"./utils/defaultFilterOptions":9,"./utils/defaultMenuRenderer":10,"prop-types":undefined}],4:[function(require,module,exports){
 (function (global){
 'use strict';
 

@@ -15,6 +15,7 @@ import BooleanSelect from './components/BooleanSelect';
 import Virtualized from './components/Virtualized';
 import States from './components/States';
 import TextFieldLabel from './components/TextFieldLabel';
+import ErrorText from './components/ErrorText';
 
 ReactDOM.render(
 	<div>
@@ -32,6 +33,7 @@ ReactDOM.render(
 			label="Custom tag creation"
 		/>
 		<TextFieldLabel label="Github users (Async with textFieldLabel)"/>
+		<ErrorText label="States with ErrorText"/>
 	</div>,
 	document.getElementById('example')
 );
