@@ -19,6 +19,7 @@ import defaultClearRenderer from './utils/defaultClearRenderer';
 import Async from './Async';
 import Option from './Option';
 import Value from './Value';
+import Creatable from './Creatable';
 
 function stringifyValue (value) {
 	const valueType = typeof value;
@@ -213,6 +214,13 @@ class Select extends Component {
 			hasValue: false,
 			errorText: undefined,
 		};
+		this.handleTouchOutside = this.handleTouchOutside.bind(this);
+		this.focus = this.focus.bind(this);
+		this.blurInput = this.blurInput.bind(this);
+		this.handleTouchMove = this.handleTouchMove.bind(this);
+		this.handleTouchStart = this.handleTouchStart.bind(this);
+		this.handleTouchEnd = this.handleTouchEnd.bind(this);
+		this.handleTouchEndClearValue = this.handleTouchEndClearValue.bind(this);
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 		this.handleMouseDownOnArrow = this.handleMouseDownOnArrow.bind(this);
 		this.handleMouseDownOnMenu = this.handleMouseDownOnMenu.bind(this);
@@ -234,12 +242,29 @@ class Select extends Component {
 		this.removeValue = this.removeValue.bind(this);
 		this.getResetValue = this.getResetValue.bind(this);
 		this.focusOption = this.focusOption.bind(this);
+		this.focusNextOption = this.focusNextOption.bind(this);
+		this.focusPreviousOption = this.focusPreviousOption.bind(this);
+		this.focusPageUpOption = this.focusPageUpOption.bind(this);
+		this.focusPageDownOption = this.focusPageDownOption.bind(this);
+		this.focusStartOption = this.focusStartOption.bind(this);
+		this.focusEndOption = this.focusEndOption.bind(this);
 		this.focusAdjacentOption = this.focusAdjacentOption.bind(this);
+		this.getFocusedOption = this.getFocusedOption.bind(this);
 		this.getInputValue = this.getInputValue.bind(this);
 		this.selectFocusedOption = this.selectFocusedOption.bind(this);
 		this.filterOptions = this.filterOptions.bind(this);
 		this.onOptionRef = this.onOptionRef.bind(this);
+		this.renderFloatingLabel = this.renderFloatingLabel.bind(this);
+		this.renderLoading = this.renderLoading.bind(this);
+		this.renderErrorText = this.renderErrorText.bind(this);
+		this.renderValue = this.renderValue.bind(this);
+		this.renderInput = this.renderInput.bind(this);
+		this.renderClear = this.renderClear.bind(this);
+		this.renderArrow = this.renderArrow.bind(this);
+		this.renderMenu = this.renderMenu.bind(this);
+		this.renderHiddenField = this.renderHiddenField.bind(this);
 		this.getFocusableOptionIndex = this.getFocusableOptionIndex.bind(this);
+		this.renderOuter = this.renderOuter.bind(this);
 	}
 
 	componentWillMount () {
@@ -853,7 +878,7 @@ class Select extends Component {
 			return this.selectValue(this._focusedOption);
 		}
 	}
-
+	
 	renderLoading () {
 		if (!this.props.isLoading) return;
 
@@ -1230,5 +1255,6 @@ class Select extends Component {
 Select.propTypes = propTypes;
 Select.defaultProps = defaultProps;
 Select.Async = Async;
+Select.Creatable = Creatable;
 
 export default Select;
